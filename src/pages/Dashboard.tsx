@@ -2,9 +2,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, ShoppingCart, Package, TrendingUp, Users, Receipt, Settings, Plus } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, TrendingUp, Users, Receipt, Settings, Plus, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const salesData = [
     { label: "Today's Sales", value: "€1,234.56", change: "+12.5%", trend: "up" },
     { label: "Orders Today", value: "47", change: "+8", trend: "up" },
@@ -27,6 +30,11 @@ const Dashboard = () => {
       case 'paid': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleLogout = () => {
+    // TODO: Implement actual logout logic
+    navigate('/login');
   };
 
   return (
@@ -70,6 +78,18 @@ const Dashboard = () => {
             </a>
           </div>
         </nav>
+
+        {/* Logout Button */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="w-full justify-start text-gray-600 hover:text-gray-800"
+          >
+            <LogOut className="mr-3 h-4 w-4" />
+            Abmelden
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
