@@ -1,0 +1,65 @@
+
+{
+  "nav": {
+    "checkout": "Kasse",
+    "tables": "Tische",
+    "course": "Gang",
+    "orders": "Bestellungen",
+    "menu": "Speisekarte",
+    "inventory": "Inventar",
+    "reports": "Berichte",
+    "staff": "Personal",
+    "settings": "Einstellungen"
+  },
+  "order": {
+    "title": "Bestellung",
+    "type": "Bestellungsart",
+    "onSite": "Vor Ort",
+    "delivery": "Lieferung",
+    "pickup": "Abholung",
+    "tableNumber": "Tischnummer",
+    "noItemsInCart": "Keine Artikel im Warenkorb",
+    "addToCart": "In den Warenkorb",
+    "total": "Gesamt",
+    "createOrder": "Bestellung erstellen",
+    "editOrder": "Bestellung bearbeiten",
+    "customerName": "Kundenname",
+    "orderNotes": "Bestellnotizen",
+    "itemName": "Artikelname",
+    "quantity": "Menge",
+    "price": "Preis",
+    "notes": "Notizen",
+    "addItem": "Artikel hinzufügen"
+  },
+  "catalog": {
+    "title": "Produktkatalog",
+    "all": "Alle",
+    "appetizers": "Vorspeisen",
+    "mainCourses": "Hauptgerichte",
+    "drinks": "Getränke", 
+    "desserts": "Desserts",
+    "add": "Hinzufügen"
+  },
+  "status": {
+    "pending": "Ausstehend",
+    "preparing": "In Vorbereitung",
+    "ready": "Bereit",
+    "completed": "Abgeschlossen",
+    "cancelled": "Storniert"
+  },
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Anzeigen",
+    "back": "Zurück",
+    "search": "Suchen"
+  },
+  "messages": {
+    "orderCreated": "Bestellung erfolgreich erstellt",
+    "orderUpdated": "Bestellung erfolgreich aktualisiert",
+    "orderDeleted": "Bestellung erfolgreich gelöscht",
+    "statusUpdated": "Bestellstatus aktualisiert"
+  }
+}

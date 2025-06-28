@@ -1,0 +1,65 @@
+
+{
+  "nav": {
+    "checkout": "Checkout",
+    "tables": "Tables", 
+    "course": "Course",
+    "orders": "Orders",
+    "menu": "Menu",
+    "inventory": "Inventory",
+    "reports": "Reports",
+    "staff": "Staff",
+    "settings": "Settings"
+  },
+  "order": {
+    "title": "Order",
+    "type": "Order type",
+    "onSite": "On site",
+    "delivery": "Delivery", 
+    "pickup": "Pickup",
+    "tableNumber": "Table number",
+    "noItemsInCart": "No items in the shopping cart",
+    "addToCart": "Add to cart",
+    "total": "Total",
+    "createOrder": "Create Order",
+    "editOrder": "Edit Order",
+    "customerName": "Customer Name",
+    "orderNotes": "Order Notes",
+    "itemName": "Item Name",
+    "quantity": "Quantity",
+    "price": "Price",
+    "notes": "Notes",
+    "addItem": "Add Item"
+  },
+  "catalog": {
+    "title": "Product catalog",
+    "all": "All",
+    "appetizers": "Appetizers",
+    "mainCourses": "Main courses", 
+    "drinks": "Drinks",
+    "desserts": "Desserts",
+    "add": "Add"
+  },
+  "status": {
+    "pending": "Pending",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "back": "Back",
+    "search": "Search"
+  },
+  "messages": {
+    "orderCreated": "Order created successfully",
+    "orderUpdated": "Order updated successfully", 
+    "orderDeleted": "Order deleted successfully",
+    "statusUpdated": "Order status updated"
+  }
+}

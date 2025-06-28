@@ -1,0 +1,65 @@
+
+{
+  "nav": {
+    "checkout": "Cassa",
+    "tables": "Tavoli",
+    "course": "Corso",
+    "orders": "Ordini",
+    "menu": "Menu",
+    "inventory": "Inventario",
+    "reports": "Report",
+    "staff": "Staff",
+    "settings": "Impostazioni"
+  },
+  "order": {
+    "title": "Ordine",
+    "type": "Tipo di ordine",
+    "onSite": "Sul posto",
+    "delivery": "Consegna",
+    "pickup": "Ritiro",
+    "tableNumber": "Numero tavolo",
+    "noItemsInCart": "Nessun articolo nel carrello",
+    "addToCart": "Aggiungi al carrello",
+    "total": "Totale",
+    "createOrder": "Crea Ordine",
+    "editOrder": "Modifica Ordine",
+    "customerName": "Nome Cliente",
+    "orderNotes": "Note Ordine",
+    "itemName": "Nome Articolo",
+    "quantity": "Quantità",
+    "price": "Prezzo",
+    "notes": "Note",
+    "addItem": "Aggiungi Articolo"
+  },
+  "catalog": {
+    "title": "Catalogo prodotti",
+    "all": "Tutti",
+    "appetizers": "Antipasti",
+    "mainCourses": "Piatti principali",
+    "drinks": "Bevande",
+    "desserts": "Dolci",
+    "add": "Aggiungi"
+  },
+  "status": {
+    "pending": "In attesa",
+    "preparing": "In preparazione",
+    "ready": "Pronto",
+    "completed": "Completato",
+    "cancelled": "Annullato"
+  },
+  "actions": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "view": "Visualizza",
+    "back": "Indietro",
+    "search": "Cerca"
+  },
+  "messages": {
+    "orderCreated": "Ordine creato con successo",
+    "orderUpdated": "Ordine aggiornato con successo",
+    "orderDeleted": "Ordine eliminato con successo",
+    "statusUpdated": "Stato ordine aggiornato"
+  }
+}
