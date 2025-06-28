@@ -3,10 +3,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, ShoppingCart, Package, TrendingUp, Users, Receipt, Settings, Plus, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const salesData = [
     { label: "Today's Sales", value: "€1,234.56", change: "+12.5%", trend: "up" },
@@ -22,6 +23,16 @@ const Dashboard = () => {
     { id: "#004", table: "Takeaway", amount: "€15.90", status: "paid", time: "14:20" }
   ];
 
+  const navigationItems = [
+    { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/orders', icon: ShoppingCart, label: 'Orders' },
+    { path: '/menu', icon: Receipt, label: 'Menu' },
+    { path: '/inventory', icon: Package, label: 'Inventory' },
+    { path: '/reports', icon: TrendingUp, label: 'Reports' },
+    { path: '/staff', icon: Users, label: 'Staff' },
+    { path: '/settings', icon: Settings, label: 'Settings' }
+  ];
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'preparing': return 'bg-yellow-100 text-yellow-800';
@@ -33,8 +44,11 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    // TODO: Implement actual logout logic
     navigate('/login');
+  };
+
+  const isActiveRoute = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
@@ -47,35 +61,26 @@ const Dashboard = () => {
         
         <nav className="mt-6">
           <div className="px-6 space-y-2">
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md" 
-               style={{ backgroundColor: '#6B2CF5', color: 'white' }}>
-              <LayoutDashboard className="mr-3 h-5 w-5" />
-              Dashboard
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <ShoppingCart className="mr-3 h-5 w-5" />
-              Orders
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <Receipt className="mr-3 h-5 w-5" />
-              Menu
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <Package className="mr-3 h-5 w-5" />
-              Inventory
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <TrendingUp className="mr-3 h-5 w-5" />
-              Reports
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <Users className="mr-3 h-5 w-5" />
-              Staff
-            </a>
-            <a href="#" className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
-              <Settings className="mr-3 h-5 w-5" />
-              Settings
-            </a>
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = isActiveRoute(item.path);
+              
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                  }`}
+                  style={isActive ? { backgroundColor: '#6B2CF5' } : {}}
+                >
+                  <Icon className="mr-3 h-5 w-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
         </nav>
 
@@ -104,6 +109,7 @@ const Dashboard = () => {
             <Button 
               className="text-white font-medium"
               style={{ backgroundColor: '#406AFF' }}
+              onClick={() => navigate('/orders')}
             >
               <Plus className="w-4 h-4 mr-2" />
               New Order
@@ -159,7 +165,7 @@ const Dashboard = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button variant="outline" className="w-full mt-4" onClick={() => navigate('/orders')}>
                     View All Orders
                   </Button>
                 </CardContent>
@@ -174,19 +180,35 @@ const Dashboard = () => {
                   <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start text-white" style={{ backgroundColor: '#6B2CF5' }}>
+                  <Button 
+                    className="w-full justify-start text-white" 
+                    style={{ backgroundColor: '#6B2CF5' }}
+                    onClick={() => navigate('/orders')}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Create New Order
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => navigate('/menu')}
+                  >
                     <Package className="w-4 h-4 mr-2" />
                     Add Menu Item
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => navigate('/reports')}
+                  >
                     <TrendingUp className="w-4 h-4 mr-2" />
                     View Reports
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => navigate('/settings')}
+                  >
                     <Settings className="w-4 h-4 mr-2" />
                     Restaurant Settings
                   </Button>
