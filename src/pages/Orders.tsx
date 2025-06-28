@@ -1,24 +1,19 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Search, Filter } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import OrderCard, { Order } from '@/components/OrderCard';
 import OrderForm from '@/components/OrderForm';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import OrdersHeader from '@/components/OrdersHeader';
+import OrdersStats from '@/components/OrdersStats';
+import OrdersFilters from '@/components/OrdersFilters';
+import OrdersList from '@/components/OrdersList';
 
 const Orders = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([
     {
       id: '1',
@@ -81,7 +76,7 @@ const Orders = () => {
     setOrders([newOrder, ...orders]);
     setShowForm(false);
     toast({
-      title: "Order Created",
+      title: t('messages.orderCreated'),
       description: `Order #${newOrder.orderNumber} has been created successfully.`,
     });
   };
@@ -107,7 +102,7 @@ const Orders = () => {
     setShowForm(false);
     setEditingOrder(null);
     toast({
-      title: "Order Updated",
+      title: t('messages.orderUpdated'),
       description: `Order #${updatedOrder.orderNumber} has been updated successfully.`,
     });
   };
@@ -116,7 +111,7 @@ const Orders = () => {
     const orderToDelete = orders.find(order => order.id === id);
     setOrders(orders.filter(order => order.id !== id));
     toast({
-      title: "Order Deleted",
+      title: t('messages.orderDeleted'),
       description: `Order #${orderToDelete?.orderNumber} has been deleted.`,
       variant: "destructive",
     });
@@ -130,13 +125,12 @@ const Orders = () => {
     
     const order = orders.find(o => o.id === id);
     toast({
-      title: "Order Status Updated",
+      title: t('messages.statusUpdated'),
       description: `Order #${order?.orderNumber} is now ${newStatus}.`,
     });
   };
 
   const handleViewOrder = (order: Order) => {
-    // For now, just show order details in a toast
     toast({
       title: `Order #${order.orderNumber}`,
       description: `${order.items.length} items - €${order.totalAmount.toFixed(2)}`,
@@ -152,9 +146,6 @@ const Orders = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusCount = (status: Order['status']) => 
-    orders.filter(order => order.status === status).length;
-
   if (showForm) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -165,7 +156,7 @@ const Orders = () => {
               setEditingOrder(null);
             }}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Orders
+              {t('actions.back')} to Orders
             </Button>
           </div>
           
@@ -190,132 +181,23 @@ const Orders = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-              <p className="text-gray-600">Manage all your orders here</p>
-            </div>
-          </div>
-          <Button 
-            className="text-white" 
-            style={{ backgroundColor: '#6B2CF5' }}
-            onClick={() => setShowForm(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Order
-          </Button>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-600">{getStatusCount('pending')}</p>
-                <p className="text-sm text-gray-600">Pending</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{getStatusCount('preparing')}</p>
-                <p className="text-sm text-gray-600">Preparing</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{getStatusCount('ready')}</p>
-                <p className="text-sm text-gray-600">Ready</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-600">{getStatusCount('completed')}</p>
-                <p className="text-sm text-gray-600">Completed</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">{getStatusCount('cancelled')}</p>
-                <p className="text-sm text-gray-600">Cancelled</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Search and Filter */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search orders by number, customer name, or table..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-gray-400" />
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="preparing">Preparing</SelectItem>
-                    <SelectItem value="ready">Ready</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Orders Grid */}
-        {filteredOrders.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-gray-500 text-lg">
-                {searchTerm || statusFilter !== 'all' ? 'No orders match your search criteria' : 'No orders yet'}
-              </p>
-              <p className="text-gray-400 mt-2">
-                {searchTerm || statusFilter !== 'all' ? 'Try adjusting your search or filter' : 'Create your first order to get started'}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onView={handleViewOrder}
-                onEdit={handleEditOrder}
-                onDelete={handleDeleteOrder}
-                onStatusChange={handleStatusChange}
-              />
-            ))}
-          </div>
-        )}
+        <OrdersHeader onNewOrder={() => setShowForm(true)} />
+        <OrdersStats orders={orders} />
+        <OrdersFilters
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onSearchChange={setSearchTerm}
+          onStatusFilterChange={setStatusFilter}
+        />
+        <OrdersList
+          filteredOrders={filteredOrders}
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onView={handleViewOrder}
+          onEdit={handleEditOrder}
+          onDelete={handleDeleteOrder}
+          onStatusChange={handleStatusChange}
+        />
       </div>
     </div>
   );
