@@ -251,28 +251,6 @@ const Orders = () => {
 
   return (
     <div className="h-full bg-gray-50">
-      {/* POS Header - simplified without back button */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-green-500 text-white p-2 rounded-lg">
-                <span className="font-bold text-xl">POS</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">Orders - Kasse</h1>
-                <p className="text-sm text-gray-600">Synacto GmbH</p>
-              </div>
-            </div>
-            
-            <div className="text-right">
-              <p className="text-sm text-gray-600">Saturday, June 29, 2025</p>
-              <p className="text-xs text-gray-500">12:34 PM</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-screen">
           {/* Product Catalog */}
@@ -286,7 +264,8 @@ const Orders = () => {
                   key={category.key}
                   variant={selectedCategory === category.key ? "default" : "outline"}
                   onClick={() => setSelectedCategory(category.key)}
-                  className={selectedCategory === category.key ? "bg-green-500 hover:bg-green-600" : ""}
+                  className={selectedCategory === category.key ? "text-white" : ""}
+                  style={selectedCategory === category.key ? { backgroundColor: '#6B2CF5' } : {}}
                 >
                   {category.key === 'all' ? 'Alle' : 
                    category.key === 'appetizers' ? 'Vorspeisen' :
@@ -314,7 +293,8 @@ const Orders = () => {
                       <Button 
                         size="sm" 
                         onClick={() => addToOrder(item)}
-                        className="bg-green-500 hover:bg-green-600"
+                        className="text-white"
+                        style={{ backgroundColor: '#6B2CF5' }}
                       >
                         Hinzufügen
                       </Button>
@@ -399,11 +379,12 @@ const Orders = () => {
             <div className="border-t pt-4">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xl font-bold">Gesamt:</span>
-                <span className="text-2xl font-bold text-green-600">€{getOrderTotal().toFixed(2)}</span>
+                <span className="text-2xl font-bold" style={{ color: '#6B2CF5' }}>€{getOrderTotal().toFixed(2)}</span>
               </div>
               <Button 
                 onClick={handleCreateOrder}
-                className="w-full bg-green-500 hover:bg-green-600 text-white mb-4"
+                className="w-full text-white mb-4"
+                style={{ backgroundColor: '#6B2CF5' }}
                 disabled={currentOrder.length === 0}
               >
                 <Receipt className="w-4 h-4 mr-2" />

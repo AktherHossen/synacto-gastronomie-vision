@@ -9,7 +9,118 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      ingredients: {
+        Row: {
+          id: number
+          name: string
+          unit: string
+          stock_quantity: number
+          expiry_date: string
+          cost_per_unit: number
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: number
+          name: string
+          unit: string
+          stock_quantity: number
+          expiry_date: string
+          cost_per_unit: number
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: number
+          name?: string
+          unit?: string
+          stock_quantity?: number
+          expiry_date?: string
+          cost_per_unit?: number
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_id_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      inventory_logs: {
+        Row: {
+          id: number
+          ingredient_id: number
+          change_type: string
+          quantity: number
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          ingredient_id: number
+          change_type: string
+          quantity: number
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          ingredient_id?: number
+          change_type?: string
+          quantity?: number
+          note?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_logs_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      menu_ingredients: {
+        Row: {
+          id: number
+          item_id: number
+          ingredient_id: number
+          quantity: number
+        }
+        Insert: {
+          id?: number
+          item_id: number
+          ingredient_id: number
+          quantity: number
+        }
+        Update: {
+          id?: number
+          item_id?: number
+          ingredient_id?: number
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_ingredients_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

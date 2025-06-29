@@ -1,9 +1,8 @@
-
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./AppSidebar"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -11,6 +10,10 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Check if we're on the dashboard route
+  const isDashboard = location.pathname === "/"
 
   return (
     <SidebarProvider>
@@ -22,8 +25,22 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2">
               <SidebarTrigger />
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">Dashboard</h2>
-                <p className="text-sm text-gray-600">Welcome back! Here's what's happening today.</p>
+                {isDashboard ? (
+                  <>
+                    <h2 className="text-2xl font-semibold text-gray-900">Dashboard</h2>
+                    <p className="text-sm text-gray-600">Welcome back! Here's what's happening today.</p>
+                  </>
+                ) : (
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    {location.pathname === "/orders" && "Orders"}
+                    {location.pathname === "/menu" && "Menu Management"}
+                    {location.pathname === "/inventory" && "Inventory"}
+                    {location.pathname === "/reports" && "Reports"}
+                    {location.pathname === "/staff" && "Staff Management"}
+                    {location.pathname === "/settings" && "Settings"}
+                    {location.pathname === "/pos" && "Point of Sale"}
+                  </h2>
+                )}
               </div>
             </div>
             <div className="flex items-center space-x-4">
