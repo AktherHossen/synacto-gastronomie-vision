@@ -6,18 +6,7 @@ import { Input } from '@/components/ui/input';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control } from 'react-hook-form';
 import { X } from 'lucide-react';
-
-interface OrderFormData {
-  customerName?: string;
-  tableNumber?: string;
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-    notes?: string;
-  }>;
-  notes?: string;
-}
+import { OrderFormData } from '@/types/order';
 
 interface OrderItemCardProps {
   control: Control<OrderFormData>;

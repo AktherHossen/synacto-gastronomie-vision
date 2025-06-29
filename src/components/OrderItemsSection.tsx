@@ -4,18 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Control, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove } from 'react-hook-form';
 import { Plus } from 'lucide-react';
 import OrderItemCard from './OrderItemCard';
-
-interface OrderFormData {
-  customerName?: string;
-  tableNumber?: string;
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-    notes?: string;
-  }>;
-  notes?: string;
-}
+import { OrderFormData } from '@/types/order';
 
 interface OrderItemsSectionProps {
   control: Control<OrderFormData>;

@@ -11,6 +11,7 @@ import OrderItemsSection from './OrderItemsSection';
 import OrderNotesField from './OrderNotesField';
 import OrderTotalSection from './OrderTotalSection';
 import OrderFormActions from './OrderFormActions';
+import { OrderFormData } from '@/types/order';
 
 const orderItemSchema = z.object({
   name: z.string().min(1, 'Item name is required'),
@@ -25,8 +26,6 @@ const orderSchema = z.object({
   items: z.array(orderItemSchema).min(1, 'At least one item is required'),
   notes: z.string().optional(),
 });
-
-type OrderFormData = z.infer<typeof orderSchema>;
 
 interface OrderFormProps {
   onSubmit: (data: OrderFormData) => void;
