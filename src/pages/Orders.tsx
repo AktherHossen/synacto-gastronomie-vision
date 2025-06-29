@@ -144,6 +144,28 @@ const Orders = () => {
     });
   };
 
+  const handleUpdateOrder = (data: any) => {
+    if (!editingOrder) return;
+    
+    const updatedOrder: Order = {
+      ...editingOrder,
+      customerName: data.customerName || '',
+      tableNumber: data.tableNumber || '',
+      items: data.items,
+      totalAmount: data.items.reduce((total: number, item: any) => total + (item.quantity * item.price), 0),
+      notes: data.notes,
+    };
+
+    setOrders(orders.map(order => 
+      order.id === editingOrder.id ? updatedOrder : order
+    ));
+    
+    toast({
+      title: t('messages.orderUpdated'),
+      description: `Order #${updatedOrder.orderNumber} has been updated successfully.`,
+    });
+  };
+
   const handleStatusChange = (id: string, newStatus: Order['status']) => {
     const updatedOrders = orders.map(order => 
       order.id === id ? { ...order, status: newStatus } : order
