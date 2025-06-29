@@ -2,11 +2,19 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Plus, ShoppingCart, Receipt } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import OrderCard, { Order } from '@/components/OrderCard';
 import OrderForm from '@/components/OrderForm';
+import GermanFiscalReceipt from '@/components/GermanFiscalReceipt';
+import { germanCompliance, FiscalReceipt } from '@/services/germanCompliance';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 // Sample menu items for the POS-like interface
 const menuItems = [
@@ -67,6 +75,8 @@ const Orders = () => {
   const [currentOrder, setCurrentOrder] = useState<any[]>([]);
   const [customerName, setCustomerName] = useState('');
   const [tableNumber, setTableNumber] = useState('');
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [currentReceipt, setCurrentReceipt] = useState<FiscalReceipt | null>(null);
 
   const categories = [
     { key: 'all', count: menuItems.length },
@@ -117,6 +127,22 @@ const Orders = () => {
       return;
     }
 
+    // Create fiscal receipt for German compliance
+    const orderData = {
+      customerName,
+      tableNumber,
+      items: currentOrder.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        category: item.category || 'food'
+      })),
+      cashierName: 'Kassierer'
+    };
+
+    const fiscalReceipt = germanCompliance.createFiscalReceipt(orderData);
+
     const newOrder: Order = {
       id: Date.now().toString(),
       orderNumber: String(orders.length + 1).padStart(3, '0'),
@@ -138,9 +164,13 @@ const Orders = () => {
     setCustomerName('');
     setTableNumber('');
     
+    // Show fiscal receipt
+    setCurrentReceipt(fiscalReceipt);
+    setShowReceipt(true);
+    
     toast({
-      title: t('messages.orderCreated'),
-      description: `Order #${newOrder.orderNumber} has been created successfully.`,
+      title: 'Bestellung erstellt',
+      description: `Bestellung #${newOrder.orderNumber} wurde erfolgreich erstellt. Kassenbeleg generiert.`,
     });
   };
 
@@ -376,7 +406,8 @@ const Orders = () => {
                 className="w-full bg-green-500 hover:bg-green-600 text-white mb-4"
                 disabled={currentOrder.length === 0}
               >
-                Bestellung erstellen
+                <Receipt className="w-4 h-4 mr-2" />
+                Bestellung erstellen & Beleg drucken
               </Button>
             </div>
 
@@ -436,6 +467,35 @@ const Orders = () => {
           </div>
         </div>
       </div>
+
+      {/* German Fiscal Receipt Dialog */}
+      <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Kassenbeleg - Deutsche Compliance</DialogTitle>
+          </DialogHeader>
+          {currentReceipt && (
+            <GermanFiscalReceipt
+              receipt={currentReceipt}
+              onPrint={() => {
+                window.print();
+                setShowReceipt(false);
+              }}
+              onDownload={() => {
+                const blob = new Blob([JSON.stringify(currentReceipt, null, 2)], 
+                  { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kassenbeleg-${currentReceipt.receiptNumber}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                setShowReceipt(false);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
