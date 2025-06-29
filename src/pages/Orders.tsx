@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import OrderCard, { Order } from '@/components/OrderCard';
 import OrderForm from '@/components/OrderForm';
-import { Link } from 'react-router-dom';
 
 // Sample menu items for the POS-like interface
 const menuItems = [
@@ -31,6 +30,7 @@ const menuItems = [
 const Orders = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
+  
   const [orders, setOrders] = useState<Order[]>([
     {
       id: '1',
@@ -191,49 +191,41 @@ const Orders = () => {
 
   if (showForm) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center space-x-4 mb-6">
-            <Button variant="outline" size="sm" onClick={() => {
-              setShowForm(false);
-              setEditingOrder(null);
-            }}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('actions.back')} to Orders
-            </Button>
-          </div>
-          
-          <OrderForm
-            onSubmit={editingOrder ? handleUpdateOrder : handleCreateOrder}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingOrder(null);
-            }}
-            initialData={editingOrder ? {
-              customerName: editingOrder.customerName,
-              tableNumber: editingOrder.tableNumber,
-              items: editingOrder.items,
-              notes: editingOrder.notes
-            } : undefined}
-          />
+      <div className="p-6">
+        <div className="flex items-center space-x-4 mb-6">
+          <Button variant="outline" size="sm" onClick={() => {
+            setShowForm(false);
+            setEditingOrder(null);
+          }}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t('actions.back')} to Orders
+          </Button>
         </div>
+        
+        <OrderForm
+          onSubmit={editingOrder ? handleUpdateOrder : handleCreateOrder}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingOrder(null);
+          }}
+          initialData={editingOrder ? {
+            customerName: editingOrder.customerName,
+            tableNumber: editingOrder.tableNumber,
+            items: editingOrder.items,
+            notes: editingOrder.notes
+          } : undefined}
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="h-full bg-gray-50">
+      {/* POS Header - simplified without back button */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/">
-                <Button variant="outline" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t('actions.back')} to Dashboard
-                </Button>
-              </Link>
               <div className="bg-green-500 text-white p-2 rounded-lg">
                 <span className="font-bold text-xl">POS</span>
               </div>
@@ -251,7 +243,7 @@ const Orders = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-screen">
           {/* Product Catalog */}
           <div className="lg:col-span-2 bg-white rounded-lg p-6">
