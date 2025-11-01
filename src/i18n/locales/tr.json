@@ -1,0 +1,69 @@
+{
+    "layout": {
+        "dashboard": "Kontrol Paneli",
+        "welcome_back": "Tekrar hoş geldiniz! Bugün olanlar burada.",
+        "orders": "Siparişler",
+        "menu_management": "Menü Yönetimi",
+        "inventory": "Envanter",
+        "reports": "Raporlar",
+        "staff_management": "Personel Yönetimi",
+        "settings": "Ayarlar",
+        "pos": "Satış Noktası",
+        "new_order": "Yeni Sipariş"
+    },
+    "sidebar": {
+        "dashboard": "Kontrol Paneli",
+        "pos": "Kasa",
+        "orders": "Siparişler",
+        "menu": "Menü",
+        "inventory": "Envanter",
+        "staff": "Personel",
+        "reports": "Raporlar",
+        "settings": "Ayarlar",
+        "help_support": "Yardım ve Destek",
+        "logout": "Çıkış Yap",
+        "tables": "Masalar"
+    },
+    "login": {
+        "title": "Tekrar Hoş Geldiniz",
+        "subtitle": "Devam etmek için lütfen bilgilerinizi girin.",
+        "email_label": "E-posta",
+        "email_placeholder": "isim@ornek.com",
+        "password_label": "Şifre",
+        "login_button": "Giriş Yap",
+        "magic_link_button": "Sihirli Bağlantı Gönder",
+        "forgot_password": "Şifrenizi mi unuttunuz?",
+        "no_account": "Hesabınız yok mu?",
+        "sign_up": "Kaydol"
+    },
+    "tables": {
+        "title": "Masa Yönetimi",
+        "add_new": "Yeni Masa Ekle",
+        "edit_title": "Masayı Düzenle",
+        "add_title": "Yeni Masa Ekle",
+        "confirm_delete": "Bu masayı silmek istediğinizden emin misiniz?",
+        "form": {
+            "name": "Ad",
+            "status": "Durum",
+            "cancel": "İptal",
+            "save": "Kaydet"
+        },
+        "status": {
+            "Available": "Müsait",
+            "Occupied": "Dolu",
+            "Reserved": "Rezerve"
+        },
+        "errors": {
+            "fetch_title": "Masaları getirirken hata oluştu",
+            "save_title": "Masayı kaydederken hata oluştu",
+            "delete_title": "Masayı silerken hata oluştu",
+            "status_update_title": "Durumu güncellerken hata oluştu"
+        },
+        "success": {
+            "update_title": "Masa başarıyla güncellendi",
+            "create_title": "Masa başarıyla oluşturuldu",
+            "delete_title": "Masa başarıyla silindi",
+            "status_update_title": "Durum başarıyla güncellendi"
+        }
+    }
+} 

@@ -22,6 +22,9 @@ const typeColor: Record<string, string> = {
 const InventoryLogsTable: React.FC<InventoryLogsTableProps> = ({ ingredientId }) => {
   const [logs, setLogs] = useState<InventoryLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [changeType, setChangeType] = useState<string>('');
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -37,9 +40,64 @@ const InventoryLogsTable: React.FC<InventoryLogsTableProps> = ({ ingredientId })
     fetchLogs();
   }, [ingredientId]);
 
+  const exportLogs = async (format: 'csv' | 'json') => {
+    const { exportInventoryLogs } = await import('../exportInventoryLogs');
+    const exported = await exportInventoryLogs({
+      format,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      changeType: changeType || undefined,
+    });
+    const blob = new Blob([exported], { type: format === 'csv' ? 'text/csv' : 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventory-logs${format === 'csv' ? '.csv' : '.json'}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="overflow-x-auto mt-6">
       <h2 className="text-lg font-semibold mb-2">Inventory Change Log</h2>
+      <div className="flex gap-2 mb-2">
+        <input
+          type="date"
+          value={startDate}
+          onChange={e => setStartDate(e.target.value)}
+          className="border rounded px-2 py-1"
+          placeholder="Start Date"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={e => setEndDate(e.target.value)}
+          className="border rounded px-2 py-1"
+          placeholder="End Date"
+        />
+        <select
+          value={changeType}
+          onChange={e => setChangeType(e.target.value)}
+          className="border rounded px-2 py-1"
+        >
+          <option value="">All Types</option>
+          <option value="add">Add</option>
+          <option value="deduct">Deduct</option>
+          <option value="spoil">Spoil</option>
+        </select>
+        <button
+          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={() => exportLogs('csv')}
+        >
+          Export CSV
+        </button>
+        <button
+          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={() => exportLogs('json')}
+        >
+          Export JSON
+        </button>
+      </div>
       <table className="min-w-full bg-white border rounded shadow">
         <thead>
           <tr className="bg-gray-100 text-left">

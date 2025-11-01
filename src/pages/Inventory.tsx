@@ -57,7 +57,7 @@ const Inventory = () => {
               variant="outline"
               onClick={() => setShowForm(false)}
             >
-              ← Back to Inventory
+               Back
             </Button>
           </div>
         </div>

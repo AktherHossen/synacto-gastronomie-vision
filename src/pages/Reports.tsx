@@ -1,28 +1,51 @@
+import React, { useState } from 'react';
+import { addDays, format } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from '@/components/ui/use-toast';
+import SalesReport from '@/components/SalesReport';
+import InventoryUsageReport from '@/components/InventoryUsageReport';
+import StaffPerformanceReport from '@/components/StaffPerformanceReport';
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+const ReportsPage = () => {
+  const [date, setDate] = useState({ from: addDays(new Date(), -30), to: new Date() });
 
-const Reports = () => {
+  const handleExport = () => { 
+      toast({ title: "Export", description: "This feature is not yet fully implemented."});
+  };
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
-        <p className="text-gray-600">View sales reports and analytics</p>
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Berichte</h1>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            {format(date.from, "d. MMMM yyyy", { locale: de })} - {format(date.to, "d. MMMM yyyy", { locale: de })}
+          </p>
+          <Button variant="outline" onClick={handleExport}><Download className="w-4 h-4 mr-2" /> Exportieren</Button>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Reports & Analytics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Reports page is under construction</p>
-            <p className="text-gray-400 mt-2">This will contain sales reports and analytics</p>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="sales" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="sales">Umsatz</TabsTrigger>
+          <TabsTrigger value="inventory">Inventar</TabsTrigger>
+          <TabsTrigger value="staff">Mitarbeiter</TabsTrigger>
+        </TabsList>
+        <TabsContent value="sales">
+          <SalesReport startDate={date.from} endDate={date.to} />
+        </TabsContent>
+        <TabsContent value="inventory">
+          <InventoryUsageReport startDate={date.from} endDate={date.to} />
+        </TabsContent>
+        <TabsContent value="staff">
+          <StaffPerformanceReport startDate={date.from} endDate={date.to} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
 
-export default Reports;
+export default ReportsPage;

@@ -1,23 +1,14 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
-
-export interface MenuItem {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  category: string;
-  available: boolean;
-}
+import { type MenuItem } from '@/services/menuService';
 
 interface MenuItemCardProps {
   item: MenuItem;
   onEdit: (item: MenuItem) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onEdit, onDelete }) => {

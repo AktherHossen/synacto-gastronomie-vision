@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,14 +8,18 @@ import { germanCompliance, FiscalReceipt } from '@/services/germanCompliance';
 const GermanComplianceDashboard: React.FC = () => {
   const [receipts, setReceipts] = useState<FiscalReceipt[]>([]);
   const [dailyReport, setDailyReport] = useState<any>(null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
 
   useEffect(() => {
-    const storedReceipts = germanCompliance.getStoredReceipts();
-    setReceipts(storedReceipts);
-    
-    const today = new Date();
-    const report = germanCompliance.generateDailyReport(today);
-    setDailyReport(report);
+    (async () => {
+      const storedReceipts = await germanCompliance.getStoredReceipts();
+      setReceipts(storedReceipts);
+      const today = new Date();
+      const report = await germanCompliance.generateDailyReport(today);
+      setDailyReport(report);
+    })();
   }, []);
 
   const exportDailyReport = () => {
@@ -37,6 +40,23 @@ const GermanComplianceDashboard: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const exportReceipts = async (format: 'csv' | 'json') => {
+    const { exportFiscalReceipts } = await import('../exportFiscalReceipts');
+    const exported = await exportFiscalReceipts({
+      format,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      paymentMethod: paymentMethod || undefined,
+    });
+    const blob = new Blob([exported], { type: format === 'csv' ? 'text/csv' : 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fiscal-receipts${format === 'csv' ? '.csv' : '.json'}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -45,6 +65,44 @@ const GermanComplianceDashboard: React.FC = () => {
           <Shield className="w-4 h-4 mr-1" />
           TSE Aktiv
         </Badge>
+      </div>
+      <div className="flex gap-2 mb-2">
+        <input
+          type="date"
+          value={startDate}
+          onChange={e => setStartDate(e.target.value)}
+          className="border rounded px-2 py-1"
+          placeholder="Start Date"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={e => setEndDate(e.target.value)}
+          className="border rounded px-2 py-1"
+          placeholder="End Date"
+        />
+        <select
+          value={paymentMethod}
+          onChange={e => setPaymentMethod(e.target.value)}
+          className="border rounded px-2 py-1"
+        >
+          <option value="">All Payment Methods</option>
+          <option value="cash">Cash</option>
+          <option value="card">Card</option>
+          <option value="other">Other</option>
+        </select>
+        <button
+          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={() => exportReceipts('csv')}
+        >
+          Export Receipts CSV
+        </button>
+        <button
+          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={() => exportReceipts('json')}
+        >
+          Export Receipts JSON
+        </button>
       </div>
 
       {/* Compliance Status */}

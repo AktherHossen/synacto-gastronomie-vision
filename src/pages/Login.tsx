@@ -1,14 +1,17 @@
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { setupInitialAdmin } from '@/api/setupAdmin';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,29 +24,117 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual authentication logic
-      if (email === 'admin@synacto.com' && password === 'admin123') {
-        toast({
-          title: "Anmeldung erfolgreich",
-          description: "Willkommen bei Synacto POS",
-        });
-        navigate('/');
-      } else {
-        toast({
-          title: "Anmeldung fehlgeschlagen",
-          description: "Ungültige E-Mail oder Passwort",
-          variant: "destructive",
-        });
+      console.log('Attempting login with:', { email, password }); // Debug log
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login Error:', error); // Debug log
+        throw error;
       }
-    } catch (error) {
+
+      if (!data.user) {
+        throw new Error('No user returned from login');
+      }
+
+      // Get staff role
+      const { data: staffData, error: staffError } = await supabase
+        .from('staff')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (staffError) {
+        console.error('Staff Error:', staffError); // Debug log
+        throw new Error('Failed to fetch staff role');
+      }
+
       toast({
-        title: "Fehler",
-        description: "Ein unerwarteter Fehler ist aufgetreten",
+        title: "Anmeldung erfolgreich",
+        description: `Willkommen ${staffData?.role === 'admin' ? '(Administrator)' : ''}`,
+      });
+      
+      // Small delay before navigation to ensure toast is shown
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+    } catch (error: any) {
+      console.error('Login Error Details:', error); // Debug log
+      
+      let errorMessage = 'Ein Fehler ist aufgetreten';
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'E-Mail-Adresse wurde noch nicht bestätigt. Bitte prüfen Sie Ihren Posteingang.';
+      }
+
+      toast({
+        title: "Anmeldung fehlgeschlagen",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSetupAdmin = async () => {
+    try {
+      setIsLoading(true);
+      console.log('Starting admin setup...'); // Debug log
+      
+      const result = await setupInitialAdmin();
+      console.log('Admin setup result:', result); // Debug log
+      
+      if (result && result.success && result.credentials) {
+        // Clear any existing values
+        setEmail('');
+        setPassword('');
+        
+        // Small delay before setting new values
+        setTimeout(() => {
+          setEmail(result.credentials.email);
+          setPassword(result.credentials.password);
+          
+          toast({
+            title: "Admin-Konto erstellt",
+            description: "Anmeldedaten wurden in die Felder eingetragen. Klicken Sie jetzt auf 'Anmelden'.",
+          });
+        }, 100);
+      } else {
+        throw new Error('Ungültige Antwort vom Server');
+      }
+    } catch (error: any) {
+      console.error('Admin setup error:', error); // Debug log
+      toast({
+        title: "Fehler bei der Admin-Einrichtung",
+        description: error.message || 'Ein unerwarteter Fehler ist aufgetreten',
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) {
+      toast({
+        title: "Magic link error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Magic link sent",
+        description: "Check your email for the magic link!",
+      });
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -55,25 +146,25 @@ const Login = () => {
                style={{ backgroundColor: '#6B2CF5' }}>
             <LogIn className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Synacto POS</h1>
-          <p className="text-gray-600">Anmelden um fortzufahren</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('login.title')}</h1>
+          <p className="text-gray-600">{t('login.subtitle')}</p>
         </div>
 
         <Card className="shadow-lg border-0">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-semibold text-center">Anmeldung</CardTitle>
             <p className="text-sm text-gray-600 text-center">
-              Geben Sie Ihre Anmeldedaten ein
+              {t('login.enter_credentials')}
             </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">E-Mail</Label>
+                <Label htmlFor="email">{t('login.email_label')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="ihre.email@restaurant.de"
+                  placeholder={t('login.email_placeholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -82,12 +173,20 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Passwort</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="password">{t('login.password_label')}</Label>
+                  <Link
+                    to="/forgot-password"
+                    className="ml-auto inline-block text-sm underline"
+                  >
+                    {t('login.forgot_password')}
+                  </Link>
+                </div>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Ihr Passwort"
+                    placeholder={t('login.password_placeholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -110,15 +209,8 @@ const Login = () => {
               <div className="flex items-center justify-between">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-600">Angemeldet bleiben</span>
+                  <span className="text-sm text-gray-600">{t('login.stay_logged_in')}</span>
                 </label>
-                <button
-                  type="button"
-                  className="text-sm font-medium hover:underline"
-                  style={{ color: '#6B2CF5' }}
-                >
-                  Passwort vergessen?
-                </button>
               </div>
 
               <Button
@@ -127,21 +219,20 @@ const Login = () => {
                 style={{ backgroundColor: '#6B2CF5' }}
                 disabled={isLoading}
               >
-                {isLoading ? 'Anmelden...' : 'Anmelden'}
+                {isLoading ? 'Anmelden...' : t('login.login_button')}
               </Button>
             </form>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-center text-sm text-gray-600">
-                Noch kein Konto?{' '}
-                <button
-                  type="button"
+                {t('login.no_account')}
+                <Link
+                  to="/signup"
                   className="font-medium hover:underline"
                   style={{ color: '#6B2CF5' }}
-                  onClick={() => navigate('/signup')}
                 >
-                  Jetzt registrieren
-                </button>
+                  {t('login.sign_up')}
+                </Link>
               </p>
             </div>
           </CardContent>
@@ -149,11 +240,20 @@ const Login = () => {
 
         {/* Demo Credentials */}
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-sm font-medium text-yellow-800 mb-2">Demo-Zugangsdaten:</h3>
+          <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('login.demo_credentials')}:</h3>
           <p className="text-xs text-yellow-700">
-            E-Mail: admin@synacto.com<br />
+            E-Mail: admin.reset@synacto.com<br />
             Passwort: admin123
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-2 w-full text-yellow-800 border-yellow-300 hover:bg-yellow-100"
+            onClick={handleSetupAdmin}
+            disabled={isLoading}
+          >
+            Admin-Konto einrichten
+          </Button>
         </div>
 
         {/* Footer */}

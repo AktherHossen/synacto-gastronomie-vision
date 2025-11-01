@@ -1,3 +1,4 @@
+import { addFiscalReceipt, getAllFiscalReceipts } from './fiscalReceiptsService';
 
 export interface FiscalReceipt {
   id: string;
@@ -90,16 +91,14 @@ class GermanComplianceService {
     };
   }
 
-  createFiscalReceipt(orderData: any): FiscalReceipt {
+  async createFiscalReceipt(orderData: any): Promise<FiscalReceipt> {
     const tseData = this.generateTSESignature();
     const receiptNumber = this.generateReceiptNumber();
-    
     const fiscalItems = orderData.items.map((item: any) => {
       const vatCalc = this.calculateVAT(item.price, item.category || 'food');
       const totalNet = vatCalc.net * item.quantity;
       const totalVat = vatCalc.vat * item.quantity;
       const totalGross = vatCalc.gross * item.quantity;
-      
       return {
         name: item.name,
         quantity: item.quantity,
@@ -110,11 +109,9 @@ class GermanComplianceService {
         totalGross: Math.round(totalGross * 100) / 100
       };
     });
-
     const subtotalNet = fiscalItems.reduce((sum, item) => sum + item.totalNet, 0);
     const totalVat = fiscalItems.reduce((sum, item) => sum + item.totalVat, 0);
     const totalGross = fiscalItems.reduce((sum, item) => sum + item.totalGross, 0);
-
     const receipt: FiscalReceipt = {
       id: `receipt-${Date.now()}`,
       receiptNumber,
@@ -129,47 +126,68 @@ class GermanComplianceService {
       fiscalMemorySerial: this.fiscalMemorySerial,
       cashierName: orderData.cashierName || 'System'
     };
-
-    this.storeReceipt(receipt);
+    await this.storeReceipt(receipt);
     return receipt;
   }
 
-  private storeReceipt(receipt: FiscalReceipt): void {
-    // Store in localStorage for demo purposes
-    // In production, this should be stored in a secure database
-    const receipts = this.getStoredReceipts();
-    receipts.push(receipt);
-    localStorage.setItem('fiscal_receipts', JSON.stringify(receipts));
+  private async storeReceipt(receipt: FiscalReceipt): Promise<void> {
+    // Store in Supabase
+    await addFiscalReceipt({
+      receipt_number: receipt.receiptNumber,
+      transaction_id: receipt.transactionId,
+      timestamp: receipt.timestamp.toISOString(),
+      items: receipt.items,
+      subtotal_net: receipt.subtotalNet,
+      total_vat: receipt.totalVat,
+      total_gross: receipt.totalGross,
+      payment_method: receipt.paymentMethod,
+      tse_signature: receipt.tseSignature,
+      fiscal_memory_serial: receipt.fiscalMemorySerial,
+      cashier_name: receipt.cashierName ?? null,
+      cancelled: receipt.cancelled ?? false
+    });
   }
 
-  getStoredReceipts(): FiscalReceipt[] {
-    const stored = localStorage.getItem('fiscal_receipts');
-    return stored ? JSON.parse(stored) : [];
+  async getStoredReceipts(): Promise<FiscalReceipt[]> {
+    // Fetch from Supabase
+    const { data } = await getAllFiscalReceipts();
+    if (!data) return [];
+    return data.map(row => ({
+      id: row.id,
+      receiptNumber: row.receipt_number,
+      transactionId: row.transaction_id,
+      timestamp: new Date(row.timestamp),
+      items: typeof row.items === 'string' ? JSON.parse(row.items) : row.items,
+      subtotalNet: row.subtotal_net,
+      totalVat: row.total_vat,
+      totalGross: row.total_gross,
+      paymentMethod: row.payment_method as 'cash' | 'card' | 'other',
+      tseSignature: row.tse_signature,
+      fiscalMemorySerial: row.fiscal_memory_serial,
+      cashierName: row.cashier_name ?? undefined,
+      cancelled: row.cancelled ?? false
+    }));
   }
 
-  generateDailyReport(date: Date): {
+  async generateDailyReport(date: Date): Promise<{
     totalSales: number;
     totalVat: number;
     transactionCount: number;
     vatBreakdown: Record<string, { net: number; vat: number; gross: number }>;
-  } {
-    const receipts = this.getStoredReceipts();
+  }> {
+    const receipts = await this.getStoredReceipts();
     const dayStart = new Date(date);
     dayStart.setHours(0, 0, 0, 0);
     const dayEnd = new Date(date);
     dayEnd.setHours(23, 59, 59, 999);
-
-    const dayReceipts = receipts.filter(receipt => 
-      receipt.timestamp >= dayStart && 
+    const dayReceipts = receipts.filter(receipt =>
+      receipt.timestamp >= dayStart &&
       receipt.timestamp <= dayEnd &&
       !receipt.cancelled
     );
-
     const totalSales = dayReceipts.reduce((sum, receipt) => sum + receipt.totalGross, 0);
     const totalVat = dayReceipts.reduce((sum, receipt) => sum + receipt.totalVat, 0);
-    
     const vatBreakdown: Record<string, { net: number; vat: number; gross: number }> = {};
-    
     dayReceipts.forEach(receipt => {
       receipt.items.forEach(item => {
         const key = `${(item.vatRate * 100).toFixed(0)}%`;
@@ -181,7 +199,6 @@ class GermanComplianceService {
         vatBreakdown[key].gross += item.totalGross;
       });
     });
-
     return {
       totalSales: Math.round(totalSales * 100) / 100,
       totalVat: Math.round(totalVat * 100) / 100,

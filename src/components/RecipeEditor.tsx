@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Database } from '@/integrations/supabase/types';
 
 interface Ingredient {
   id: number;
@@ -53,7 +54,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ itemId }) => {
       const { data, error } = await supabase
         .from("menu_ingredients")
         .select("id, ingredient_id, quantity, unit, ingredients(name)")
-        .eq("item_id", itemId);
+        .eq("menu_item_id", itemId);
       if (!error && data) {
         setRecipe(
           data.map((row: any) => ({
@@ -118,12 +119,13 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ itemId }) => {
     // Save new rows
     const newRows = recipe.filter((r) => r.isNew);
     for (const row of newRows) {
-      const { error } = await supabase.from("menu_ingredients").insert({
-        item_id: itemId,
+      const insertRow: Database['public']['Tables']['menu_ingredients']['Insert'] = {
+        menu_item_id: itemId,
         ingredient_id: row.ingredient_id,
         quantity: row.quantity,
         unit: row.unit,
-      });
+      };
+      const { error } = await supabase.from("menu_ingredients").insert(insertRow);
       if (error) setError(error.message);
     }
     // Save edited rows (existing)
@@ -139,7 +141,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ itemId }) => {
     const { data, error: fetchError } = await supabase
       .from("menu_ingredients")
       .select("id, ingredient_id, quantity, unit, ingredients(name)")
-      .eq("item_id", itemId);
+      .eq("menu_item_id", itemId);
     if (!fetchError && data) {
       setRecipe(
         data.map((row: any) => ({

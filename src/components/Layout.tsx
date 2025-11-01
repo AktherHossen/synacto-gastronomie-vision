@@ -1,19 +1,32 @@
+import { useTranslation } from 'react-i18next';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./AppSidebar"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, Outlet } from "react-router-dom"
+import LanguageSelector from './LanguageSelector'
 
-interface LayoutProps {
-  children: React.ReactNode
-}
-
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
+  const { t } = useTranslation();
   const navigate = useNavigate()
   const location = useLocation()
   
   // Check if we're on the dashboard route
   const isDashboard = location.pathname === "/"
+
+  const getPageTitle = () => {
+    switch(location.pathname) {
+        case "/": return t('layout.dashboard');
+        case "/orders": return t('layout.orders');
+        case "/menu": return t('layout.menu_management');
+        case "/inventory": return t('layout.inventory');
+        case "/reports": return t('layout.reports');
+        case "/staff": return t('layout.staff_management');
+        case "/settings": return t('layout.settings');
+        case "/pos": return t('layout.pos');
+        default: return "Synacto";
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -25,40 +38,19 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2">
               <SidebarTrigger />
               <div>
-                {isDashboard ? (
-                  <>
-                    <h2 className="text-2xl font-semibold text-gray-900">Dashboard</h2>
-                    <p className="text-sm text-gray-600">Welcome back! Here's what's happening today.</p>
-                  </>
-                ) : (
-                  <h2 className="text-2xl font-semibold text-gray-900">
-                    {location.pathname === "/orders" && "Orders"}
-                    {location.pathname === "/menu" && "Menu Management"}
-                    {location.pathname === "/inventory" && "Inventory"}
-                    {location.pathname === "/reports" && "Reports"}
-                    {location.pathname === "/staff" && "Staff Management"}
-                    {location.pathname === "/settings" && "Settings"}
-                    {location.pathname === "/pos" && "Point of Sale"}
-                  </h2>
-                )}
+                <h2 className="text-2xl font-semibold text-gray-900">{getPageTitle()}</h2>
+                {isDashboard && <p className="text-sm text-gray-600">{t('layout.welcome_back')}</p>}
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button 
-                className="text-white font-medium"
-                style={{ backgroundColor: '#406AFF' }}
-                onClick={() => navigate('/orders')}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Order
-              </Button>
+              <LanguageSelector />
               <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
             </div>
           </header>
 
           {/* Main Content */}
-          <main className="flex-1">
-            {children}
+          <main className="flex-1 p-6 bg-gray-50/50">
+            <Outlet />
           </main>
         </SidebarInset>
       </div>

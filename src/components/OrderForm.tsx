@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,21 +10,22 @@ import OrderItemsSection from './OrderItemsSection';
 import OrderNotesField from './OrderNotesField';
 import OrderTotalSection from './OrderTotalSection';
 import OrderFormActions from './OrderFormActions';
-import { OrderFormData } from '@/types/order';
+// import { OrderFormData } from '@/types/order';
 
 const orderItemSchema = z.object({
-  name: z.string().min(1, 'Item name is required'),
+  menu_item_id: z.string().uuid(),
   quantity: z.number().min(1, 'Quantity must be at least 1'),
-  price: z.number().min(0, 'Price must be positive'),
   notes: z.string().optional(),
 });
 
 const orderSchema = z.object({
   customerName: z.string().optional(),
-  tableNumber: z.string().optional(),
+  tableId: z.string().uuid().optional(),
   items: z.array(orderItemSchema).min(1, 'At least one item is required'),
   notes: z.string().optional(),
 });
+
+type OrderFormData = z.infer<typeof orderSchema>;
 
 interface OrderFormProps {
   onSubmit: (data: OrderFormData) => void;
@@ -36,11 +36,8 @@ interface OrderFormProps {
 const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onCancel, initialData }) => {
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
-    defaultValues: {
-      customerName: initialData?.customerName || '',
-      tableNumber: initialData?.tableNumber || '',
-      items: initialData?.items || [{ name: '', quantity: 1, price: 0, notes: '' }],
-      notes: initialData?.notes || '',
+    defaultValues: initialData || {
+      items: [],
     },
   });
 
@@ -55,8 +52,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onCancel, initialData }
   };
 
   const calculateTotal = () => {
-    const items = form.watch('items');
-    return items.reduce((total, item) => total + (item.quantity * item.price), 0);
+    // This needs to be updated to fetch prices based on menu_item_id
+    return 0;
   };
 
   return (
@@ -65,9 +62,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onCancel, initialData }
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <CustomerInfoFields control={form.control} />
+            <CustomerInfoFields form={form} />
             <OrderItemsSection 
-              control={form.control}
+              form={form}
               fields={fields}
               append={append}
               remove={remove}

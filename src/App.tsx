@@ -1,52 +1,69 @@
-
+import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./i18n";
-import { Layout } from "./components/Layout";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Orders from "./pages/Orders";
-import Menu from "./pages/Menu";
-import Inventory from "./pages/Inventory";
-import Reports from "./pages/Reports";
-import Staff from "./pages/Staff";
-import Settings from "./pages/Settings";
-import POS from "./pages/POS";
-import NotFound from "./pages/NotFound";
+import { Layout } from './components/Layout';
+import LoginLayout from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Orders from './pages/Orders';
+import Menu from './pages/Menu';
+import Inventory from './pages/Inventory';
+import Staff from './pages/Staff';
+import Reports from './pages/Reports';
+import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
+import POS from './pages/POS';
+import Signup from './pages/Signup';
+import Debug from './pages/Debug';
+import KitchenDisplay from './pages/KitchenDisplay';
+import Tables from './pages/Tables';
+import { VendorProvider } from "@/context/VendorContext";
+import { TrialBanner } from "@/components/TrialBanner";
+import DeliveryIntegrationsPage from '@/pages/integrations/Delivery';
+import Customers from './pages/Customers';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Routes without sidebar */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          
-          {/* Routes with sidebar */}
-          <Route path="/" element={<Layout><Index /></Layout>} />
-          <Route path="/orders" element={<Layout><Orders /></Layout>} />
-          <Route path="/menu" element={<Layout><Menu /></Layout>} />
-          <Route path="/inventory" element={<Layout><Inventory /></Layout>} />
-          <Route path="/reports" element={<Layout><Reports /></Layout>} />
-          <Route path="/staff" element={<Layout><Staff /></Layout>} />
-          <Route path="/settings" element={<Layout><Settings /></Layout>} />
-          <Route path="/pos" element={<Layout><POS /></Layout>} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path="/login" element={<LoginLayout />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="pos" element={<POS />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="menu" element={<Menu />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="staff" element={<Staff />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="tables" element={<Tables />} />
+        <Route path="kitchen" element={<KitchenDisplay />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="debug" element={<Debug />} />
+        <Route path="integrations/delivery" element={<DeliveryIntegrationsPage />} />
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </>
+  )
 );
+
+const App = () => {
+  return (
+    <VendorProvider>
+      <TrialBanner />
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <RouterProvider router={router} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </VendorProvider>
+  );
+};
 
 export default App;

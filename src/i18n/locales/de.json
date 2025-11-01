@@ -1,4 +1,3 @@
-
 {
   "nav": {
     "checkout": "Kasse",
@@ -61,5 +60,72 @@
     "orderUpdated": "Bestellung erfolgreich aktualisiert",
     "orderDeleted": "Bestellung erfolgreich gelöscht",
     "statusUpdated": "Bestellstatus aktualisiert"
+  },
+  "layout": {
+    "dashboard": "Dashboard",
+    "welcome_back": "Willkommen zurück! Das passiert heute.",
+    "orders": "Bestellungen",
+    "menu_management": "Menüverwaltung",
+    "inventory": "Inventar",
+    "reports": "Berichte",
+    "staff_management": "Mitarbeiterverwaltung",
+    "settings": "Einstellungen",
+    "pos": "Kassensystem",
+    "new_order": "Neue Bestellung"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "pos": "Kasse",
+    "orders": "Bestellungen",
+    "menu": "Menü",
+    "inventory": "Inventar",
+    "staff": "Mitarbeiter",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "help_support": "Hilfe & Support",
+    "logout": "Abmelden",
+    "tables": "Tische"
+  },
+  "login": {
+    "title": "Willkommen zurück",
+    "subtitle": "Bitte geben Sie Ihre Zugangsdaten ein, um fortzufahren.",
+    "email_label": "E-Mail",
+    "email_placeholder": "name@beispiel.com",
+    "password_label": "Passwort",
+    "login_button": "Anmelden",
+    "magic_link_button": "Magic Link senden",
+    "forgot_password": "Passwort vergessen?",
+    "no_account": "Sie haben noch kein Konto?",
+    "sign_up": "Registrieren"
+  },
+  "tables": {
+    "title": "Tischverwaltung",
+    "add_new": "Neuen Tisch hinzufügen",
+    "edit_title": "Tisch bearbeiten",
+    "add_title": "Neuen Tisch hinzufügen",
+    "confirm_delete": "Möchten Sie diesen Tisch wirklich löschen?",
+    "form": {
+      "name": "Name",
+      "status": "Status",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    },
+    "status": {
+      "Available": "Verfügbar",
+      "Occupied": "Besetzt",
+      "Reserved": "Reserviert"
+    },
+    "errors": {
+      "fetch_title": "Fehler beim Laden der Tische",
+      "save_title": "Fehler beim Speichern des Tisches",
+      "delete_title": "Fehler beim Löschen des Tisches",
+      "status_update_title": "Fehler beim Aktualisieren des Status"
+    },
+    "success": {
+      "update_title": "Tisch erfolgreich aktualisiert",
+      "create_title": "Tisch erfolgreich erstellt",
+      "delete_title": "Tisch erfolgreich gelöscht",
+      "status_update_title": "Status erfolgreich aktualisiert"
+    }
   }
 }

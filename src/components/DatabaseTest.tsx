@@ -45,7 +45,21 @@ const DatabaseTest = () => {
       
       results.push('✅ Ingredients table exists and is accessible');
       
-      // Test 3: Insert test
+      // Test 3: Check fiscal_receipts table
+      results.push('🔍 Testing fiscal_receipts table...');
+      const { data: fiscalTest, error: fiscalError } = await supabase
+        .from('fiscal_receipts')
+        .select('*')
+        .limit(1);
+      
+      if (fiscalError) {
+        results.push(`❌ Fiscal receipts table test failed: ${fiscalError.message}`);
+        throw fiscalError;
+      }
+      
+      results.push('✅ Fiscal receipts table exists and is accessible');
+      
+      // Test 4: Insert test
       results.push('🔍 Testing insert operation...');
       const testIngredient = {
         name: 'Test Ingredient',
@@ -68,7 +82,7 @@ const DatabaseTest = () => {
       
       results.push('✅ Insert operation successful');
       
-      // Test 4: Clean up test data
+      // Test 5: Clean up test data
       if (insertData && insertData.length > 0) {
         results.push('🔍 Cleaning up test data...');
         const { error: deleteError } = await supabase

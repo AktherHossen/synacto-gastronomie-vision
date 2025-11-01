@@ -35,6 +35,7 @@ const IngredientForm = ({ onSuccess }: IngredientFormProps) => {
     expiry_date: '',
     cost_per_unit: 0
   });
+  const [addedIngredientId, setAddedIngredientId] = useState<number | null>(null);
 
   const handleInputChange = (field: keyof IngredientFormData, value: string | number) => {
     setFormData(prev => ({
@@ -146,6 +147,10 @@ const IngredientForm = ({ onSuccess }: IngredientFormProps) => {
 
       console.log('Ingredient added successfully:', data);
 
+      if (data && data.length > 0 && typeof data[0].id === 'number') {
+        setAddedIngredientId(data[0].id);
+      }
+
       toast({
         title: "Success!",
         description: `Ingredient "${formData.name}" has been added successfully.`,
@@ -157,13 +162,13 @@ const IngredientForm = ({ onSuccess }: IngredientFormProps) => {
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding ingredient:', error);
       
       // More detailed error handling
       let errorMessage = "Failed to add ingredient. Please try again.";
       
-      if (error.message) {
+      if (error instanceof Error && error.message) {
         if (error.message.includes('relation "ingredients" does not exist')) {
           errorMessage = "The ingredients table doesn't exist. Please create it in your Supabase database.";
         } else if (error.message.includes('permission denied')) {
@@ -308,7 +313,11 @@ const IngredientForm = ({ onSuccess }: IngredientFormProps) => {
             </Button>
           </div>
         </form>
-        <InventoryLogsTable ingredientId={ingredient.id} />
+        {typeof addedIngredientId === 'number' && (
+          <div className="mt-8">
+            <InventoryLogsTable ingredientId={addedIngredientId} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

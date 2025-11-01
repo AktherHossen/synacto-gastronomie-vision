@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { 
   LayoutDashboard, 
@@ -8,9 +7,19 @@ import {
   Users, 
   Receipt, 
   Settings,
-  LogOut 
+  LogOut,
+  Armchair,
+  BookOpen,
+  Warehouse,
+  PlusCircle,
+  Soup,
+  Table,
+  Map,
 } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import LanguageSelector from './LanguageSelector'
 
 import {
   Sidebar,
@@ -26,20 +35,27 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 
-const navigationItems = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/orders', icon: ShoppingCart, label: 'Orders' },
-  { path: '/menu', icon: Receipt, label: 'Menu' },
-  { path: '/inventory', icon: Package, label: 'Inventory' },
-  { path: '/reports', icon: TrendingUp, label: 'Reports' },
-  { path: '/staff', icon: Users, label: 'Staff' },
-  { path: '/settings', icon: Settings, label: 'Settings' }
-]
-
 export function AppSidebar() {
+  const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const currentPath = location.pathname
+
+  const navigationItems = [
+    { path: '/', icon: LayoutDashboard, label: t('sidebar.dashboard') },
+    { path: '/pos', icon: ShoppingCart, label: t('sidebar.pos') },
+    { path: '/orders', icon: Receipt, label: t('sidebar.orders') },
+    { path: '/tables', icon: Table, label: t('sidebar.tables') },
+    { path: '/floor-plan', icon: Map, label: t('sidebar.floorPlan') },
+    { path: '/kitchen', icon: Soup, label: t('sidebar.kitchenDisplay') },
+    { path: '/menu', icon: Receipt, label: t('sidebar.menu') },
+    { path: '/inventory', icon: Package, label: t('sidebar.inventory') },
+    { path: '/reports', icon: TrendingUp, label: t('sidebar.reports') },
+    { path: '/staff', icon: Users, label: t('sidebar.staff') },
+    { path: '/customers', icon: Users, label: t('sidebar.customers', 'Customers') },
+    { path: '/integrations/delivery', icon: Warehouse, label: t('sidebar.delivery', 'Delivery Integrations') },
+    { path: '/settings', icon: Settings, label: t('sidebar.settings') }
+  ]
 
   const isActive = (path: string) => currentPath === path
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -58,7 +74,7 @@ export function AppSidebar() {
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.navigation', 'Navigation')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
@@ -80,14 +96,22 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="w-full justify-start text-sidebar-foreground hover:text-sidebar-accent-foreground"
-        >
-          <LogOut className="mr-3 h-4 w-4" />
-          Abmelden
-        </Button>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={isActive('/settings')}>
+              <NavLink to="/settings" className={getNavCls}>
+                <Settings className="h-5 w-5" />
+                <span>{t('sidebar.settings')}</span>
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout}>
+              <LogOut className="h-5 w-5" />
+              <span>{t('sidebar.logout')}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )

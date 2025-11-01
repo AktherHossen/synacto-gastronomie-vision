@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import POSOrderSystem, { POSMenuItem } from '@/components/POSOrderSystem';
@@ -39,39 +38,11 @@ const POS = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-green-500 text-white p-2 rounded-lg">
-                <span className="font-bold text-xl">POS</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">Restaurant POS</h1>
-                <p className="text-sm text-gray-600">Synacto GmbH</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <LanguageSelector />
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Saturday, June 28, 2025</p>
-                <p className="text-xs text-gray-500">12:34 PM</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6">
-        <POSOrderSystem 
-          menuItems={menuItems}
-          onCreateOrder={handleCreateOrder}
-        />
-      </div>
+    <div className="p-6">
+      <POSOrderSystem 
+        menuItems={menuItems}
+        onCreateOrder={handleCreateOrder}
+      />
     </div>
   );
 };

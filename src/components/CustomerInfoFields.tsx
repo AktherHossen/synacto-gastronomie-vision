@@ -1,41 +1,57 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Control } from 'react-hook-form';
-import { OrderFormData } from '@/types/order';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getTables, Table } from '@/services/tableService';
 
 interface CustomerInfoFieldsProps {
-  control: Control<OrderFormData>;
+  form: UseFormReturn<any>;
 }
 
-const CustomerInfoFields: React.FC<CustomerInfoFieldsProps> = ({ control }) => {
+const CustomerInfoFields: React.FC<CustomerInfoFieldsProps> = ({ form }) => {
+  const [availableTables, setAvailableTables] = useState<Table[]>([]);
+
+  useEffect(() => {
+    const fetchTables = async () => {
+      try {
+        const allTables = await getTables();
+        setAvailableTables(allTables.filter(t => t.status === 'Available' || form.getValues('tableId') === t.id));
+      } catch (error) {
+        console.error("Failed to fetch tables:", error);
+      }
+    };
+    fetchTables();
+  }, [form]);
+
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <FormField
-        control={control}
+        control={form.control}
         name="customerName"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Customer Name</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter customer name" {...field} />
-            </FormControl>
-            <FormMessage />
+            <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
           </FormItem>
         )}
       />
-
       <FormField
-        control={control}
-        name="tableNumber"
+        control={form.control}
+        name="tableId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Table Number</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter table number" {...field} />
-            </FormControl>
-            <FormMessage />
+            <FormLabel>Table</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl><SelectTrigger><SelectValue placeholder="Select a table" /></SelectTrigger></FormControl>
+              <SelectContent>
+                {availableTables.map(table => (
+                  <SelectItem key={table.id} value={table.id}>
+                    {table.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </FormItem>
         )}
       />
