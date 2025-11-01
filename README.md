@@ -1,6 +1,10 @@
 # Welcome to your Lovable project
 
 
+## Synacto Gastronomie Vision
+
+A restaurant management system for menus, orders, inventory, and staff management.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
